@@ -1,5 +1,8 @@
 import numpy as np
 
+# This is a six-coordinate points of ref3Dmodel and ref2DImagePoints
+# refers to nose tip, chin, left corner of the left eye
+# right corner of the right eye, corners of the mouth
 def ref3DModel():
     modelPoints = [[0.0, 0.0, 0.0],
                    [0.0, -330.0, -65.0],
