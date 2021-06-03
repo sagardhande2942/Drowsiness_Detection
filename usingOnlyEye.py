@@ -1,7 +1,8 @@
 import os
 from threading import Thread
 import time
-
+from datetime import datetime, date
+today = date.today()
 # Project related imports for image processing
 import cv2
 import dlib
@@ -10,10 +11,15 @@ import numpy as np
 from imutils import face_utils
 import concurrent.futures
 from playsound import playsound
+import pandas as pd
 
 # Importing required files
 import start
 import Distraction
+
+# Asking for the user's name before starting
+NAME = input("Please enter your name : ")
+
 # Declaring constants
 
 # Drowsy Distance between eye lids threshold
@@ -70,11 +76,16 @@ def distractionAlert(num, msg):
 # No Face detected flag
 NO_FACE_FLAG = False
 NO_FACE_FLAG1 = False
+
+# Vars for df rows
+Dfmsg = ""
+
 # Function for alarm when no face is detected
 def NoFaceFunc():
-    global NO_FACE_FLAG, NO_FACE_FLAG1
+    global NO_FACE_FLAG, NO_FACE_FLAG1, Dfmsg
     time.sleep(4)
     if not NO_FACE_FLAG and not NO_FACE_FLAG1:
+        Dfmsg += "No face detected | "
         NO_FACE_FLAG = True
         tts = gTTS("No face is detected please make sure you are properly visible in the camera")
         tts.save('noFace.mp3')
@@ -103,6 +114,15 @@ def eyeThresholdCount():
 
 print("Started..")
 
+data = {'Name':'NEW SESSION',
+        'Time': today.strftime("%d/%m/%Y") + " | " + datetime.now().strftime("%H:%M:%S"),
+        'Message':'-----',
+    }
+
+df = pd.DataFrame(data, index=[0])
+
+
+
 while True:
 
     # Capturing frames
@@ -117,6 +137,7 @@ while True:
         NO_FACE_FLAG1 = False
         if not NO_FACE_FLAG:
             Thread(target = NoFaceFunc).start()
+            
     else:
         NO_FACE_FLAG1 = True
     # Running required processes on all detected faces
@@ -141,10 +162,13 @@ while True:
             if MAR > MAR_THRES:
                 MAR_COUNTER += 1
             if MAR_COUNTER >= 2:
-                Thread(target=distractionAlert, args=(10, "User is Speaking or talking on phone please focus on road")).start()
+                mm = "User is Speaking or talking on phone please focus on road"
+                Thread(target=distractionAlert, args=(10, "{}".format(mm))).start()
+                Dfmsg += "{}".format(mm) + " | "  
                 MAR_COUNTER = 0
             if "Left" in message or "Right" in message:
                 Thread(target = distractionAlert, args=(10, message)).start()
+                Dfmsg += "{}".format(message) + " | "
         if DISC_FLAG:
             DISC_FLAG1 = False
             DISC_COUNTER = 0
@@ -169,6 +193,7 @@ while True:
         if(EYE_CONSEC >= EYE_THRESH):
             print("Drowsy")
             print(start.AdvanceDetection(cap))
+            Dfmsg += "User is drowsy | "
             EYE_CONSEC = 0
 
         # Plotting the eye points on the screen
@@ -181,8 +206,16 @@ while True:
     # Assigning ESC as closing key
     if cv2.waitKey(delay = 1) == 27:
         break
-
+    if len(Dfmsg) != 0:
+        Dfmsg = Dfmsg[:-2]
+        df.loc[len(df.index)] = [NAME, today.strftime("%d/%m/%Y") + " | " + datetime.now().strftime("%H:%M:%S"), Dfmsg]
+    Dfmsg = ""
+    
 # Closing the camera input and closing the windows
+print(df)
 cap.release()
 cv2.destroyAllWindows()
 
+df.to_csv('{}.csv'.format(NAME), mode = 'a', header = False)
+# You're still reading? This is to take a look at what you want to double check your work. index_col = 0 will prevent a "Unnamed:0" column for appearing.
+df_result = pd.read_csv('{}.csv'.format(NAME), index_col=0).reset_index(drop = True, inplace = True)

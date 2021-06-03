@@ -7,8 +7,7 @@ import time
 # Imports related to image processing and alarms
 import cv2
 import dlib
-import numpy as np
-import pyttsx3
+import numpy as np 
 from gtts import gTTS
 from imutils import face_utils
 from numpy.core.numeric import count_nonzero

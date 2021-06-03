@@ -8,10 +8,12 @@ import time
 import cv2
 import dlib
 import numpy as np
+import pandas as pd
 from gtts import gTTS
 from imutils import face_utils
 from playsound import playsound
 from scipy.spatial import distance as dist
+
 
 
 # Declaring Required Constants And Thresholds
@@ -104,6 +106,8 @@ predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 # Flag for Blink Check
 blinkCheck = False
+
+
 
 def AdvanceDetection(cap):
 
