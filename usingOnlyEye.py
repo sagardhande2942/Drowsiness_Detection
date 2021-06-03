@@ -61,6 +61,23 @@ def distractionAlert(num, msg):
     os.remove('hello1.mp3')
 
 
+
+# No Face detected flag
+NO_FACE_FLAG = False
+NO_FACE_FLAG1 = False
+# Function for alarm when no face is detected
+def NoFaceFunc():
+    global NO_FACE_FLAG, NO_FACE_FLAG1
+    time.sleep(4)
+    if not NO_FACE_FLAG and not NO_FACE_FLAG1:
+        NO_FACE_FLAG = True
+        tts = gTTS("No face is detected please make sure you are properly visible in the camera")
+        tts.save('noFace.mp3')
+        playsound('noFace.mp3')
+        os.remove('noFace.mp3')
+        NO_FACE_FLAG = False
+
+
 def increasingWithTime():
     global DISC_COUNTER
     time.sleep(1)
@@ -91,7 +108,13 @@ while True:
 
     # Getting all detected faces rectangle
     rects = detector(gray, 1)
-
+    print(len(rects))
+    if len(rects) == 0:
+        NO_FACE_FLAG1 = False
+        if not NO_FACE_FLAG:
+            Thread(target = NoFaceFunc).start()
+    else:
+        NO_FACE_FLAG1 = True
     # Running required processes on all detected faces
     for (i, rect) in enumerate(rects):
 
