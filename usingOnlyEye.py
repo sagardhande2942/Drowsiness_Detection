@@ -1,4 +1,3 @@
-import math
 import os
 from threading import Thread
 import time
@@ -52,13 +51,19 @@ DISC_FLAG1 = False
 # Taking video input form specified camera
 cap = cv2.VideoCapture(0)
 
+# Mouth Aspect Ration Constant
+MAR = 0
+MAR_COUNTER = 0
+
+# MAR Threshold
+MAR_THRES = 35
 
 # Alarm when driver is drowsy for a threshold value of frames
 def distractionAlert(num, msg):
-    tts = gTTS("You seem distracted please focus on the road")
-    tts.save('hello1.mp3')
-    playsound('hello1.mp3')
-    os.remove('hello1.mp3')
+    tts = gTTS("{}".format(msg))
+    tts.save('distractAlert.mp3')
+    playsound('distractAlert.mp3')
+    os.remove('distractAlert.mp3')
 
 
 
@@ -108,7 +113,6 @@ while True:
 
     # Getting all detected faces rectangle
     rects = detector(gray, 1)
-    print(len(rects))
     if len(rects) == 0:
         NO_FACE_FLAG1 = False
         if not NO_FACE_FLAG:
@@ -132,8 +136,13 @@ while True:
             print("Checking for distractions..")
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(Distraction.Distraction, cap)
-                DISC_FLAG, message = future.result()
+                DISC_FLAG, message, MAR = future.result()
             print(message)
+            if MAR > MAR_THRES:
+                MAR_COUNTER += 1
+            if MAR_COUNTER >= 2:
+                Thread(target=distractionAlert, args=(10, "User is Speaking or talking on phone please focus on road")).start()
+                MAR_COUNTER = 0
             if "Left" in message or "Right" in message:
                 Thread(target = distractionAlert, args=(10, message)).start()
         if DISC_FLAG:

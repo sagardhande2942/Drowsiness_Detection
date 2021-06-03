@@ -204,18 +204,9 @@ def Distraction(cap):
             # print('*' * 80)
 
             # Defining threshold values for various head poses
-            if angles[1] < -15:
-                GAZE = "Looking: Left"
-                return True, "User is distracted {}".format(GAZE)
-            elif angles[1] > 15:
-                GAZE = "Looking: Right"
-                return True, "User is distracted {}".format(GAZE)
-            else:
-                GAZE = "Forward"
-                return True, "User is focussed now"
+           
 
-            cv2.putText(frame, GAZE, (20, 20),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 80), 2)
+            
 
 
             # print(face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
@@ -314,6 +305,8 @@ def Distraction(cap):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2
             )
 
+
+
             # convert dlib's rectangle to a OpenCV-style bounding box
             # [i.e., (x, y, w, h)], then draw the face bounding box
 
@@ -326,6 +319,20 @@ def Distraction(cap):
                 # cv2.circle(frame, (x, y), 1, (0, 0, 255), -1, radius=2)
                 cv2.circle(frame, (x, y), radius=2,
                         color=(0, 0, 255), thickness=-1)
+
+
+            if angles[1] < -15:
+                GAZE = "Looking Left"
+                return True, "User is distracted {}".format(GAZE), distance
+            elif angles[1] > 15:
+                GAZE = "Looking Right"
+                return True, "User is distracted {}".format(GAZE), distance
+            else:
+                GAZE = "Forward"
+                return True, "User is focussed now", distance
+
+            cv2.putText(frame, GAZE, (20, 20),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 80), 2)
 
         # show the image
         cv2.imshow(winname="Face", mat=frame)

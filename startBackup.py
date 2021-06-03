@@ -63,7 +63,7 @@ saying = False
 
 
 # Function to sound the yawn alarm
-def yawnAlarm():
+def yawnAlarm(num):
 
     # Tried the pyttsx3 lib but it is sync
 
@@ -155,7 +155,7 @@ while True:
         # For detecting head pose
         newrect = dlib.rectangle(x, y, w, h)
         refImgPts = PNPProb.ref2dImagePoints(shape)
-        height, width, channels = frame.shap
+        height, width, channels = frame.shape
         focalLength = 1 * width
         cameraMatrix = PNPProb.CameraMatrix(
             focalLength, (height / 2, width / 2))
