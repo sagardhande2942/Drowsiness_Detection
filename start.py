@@ -53,20 +53,29 @@ saying = False
 (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"] # Points for left eye
 (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"] # Points for right eye
 
+# Thread kill flag
+THREAD_KILL_FLAG = False
 
 # Alarm when driver is drowsy for a threshold value of frames
 def drowsyAlert(num):
+    global THREAD_KILL_FLAG
     while not ALARM_OFF:
+        print("IN THE THREAD")
         tts = gTTS("`You are really sleepy please have some refreshments")
         tts.save('hello1.mp3')
         playsound('hello1.mp3')
         os.remove('hello1.mp3')
         for _ in range(5):
-            if ALARM_OFF: return "Exiting"
+            if ALARM_OFF: 
+                return "Exiting"
             time.sleep(1)
+        if THREAD_KILL_FLAG:
+            THREAD_KILL_FLAG = False
+            break
 
-# Drwosy alarm thread
-DROWSY_ALARM_THREAD = threading.Thread(target=drowsyAlert, args=(10,))
+
+
+
 
 # EAR formula function, to calculate the distance between eyelids
 def eye_aspect_ratio(eye):
@@ -111,14 +120,17 @@ blinkCheck = False
 
 def AdvanceDetection(cap):
 
+    # Drwosy alarm thread
+    DROWSY_ALARM_THREAD = threading.Thread(target=drowsyAlert, args=(10,))
+
     global blinkCheck, predictor, detector, EYE_AR_THRESH
     global EYE_AR_CONSEC_FRAMES, EYE_BLINK_THRESH
     global COUNTER, ALARM_ON
     global alarm_status, alarm_status2, saying, ALARM_OFF
-    global DROWSY_ALARM_THREAD
+    global THREAD_KILL_FLAG
 
     while True:
-        # taking frames from the video
+        # taking frames from the video/
         _, frame = cap.read()
 
         # Convert image into grayscale
@@ -159,7 +171,6 @@ def AdvanceDetection(cap):
             cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
             cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
 
-
             # Checking if the driver is drowsy from the given threshold value
             if ear < EYE_AR_THRESH:
                 COUNTER += 1
@@ -170,7 +181,7 @@ def AdvanceDetection(cap):
                         try:
                             DROWSY_ALARM_THREAD.start()
                         except Exception as e:
-                            print("Error in start : ", e)
+                            print("Error in start while starting thread: ", e)
                         ALARM_ON = True
                     cv2.putText(frame, "DROWSINESS ALERT!", (10, 50),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
@@ -182,9 +193,8 @@ def AdvanceDetection(cap):
                 try:
                     DROWSY_ALARM_THREAD.join()
                 except Exception as e:
-                    print("Error in start : ", e)
+                    print("Error in start while join : " + str(e))
                 return "User is awake now"
-
 
 
             # Printing the current EAR of the driver on screen

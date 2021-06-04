@@ -11,6 +11,7 @@ from gtts import gTTS
 from imutils import face_utils
 from numpy.core.numeric import count_nonzero
 from playsound import playsound
+from scipy.spatial import distance as dist
 
 # PNPProb ( Perspective-n-Point Problem ) import from the file ( For 3d face detection )
 import PNPProb

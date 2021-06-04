@@ -12,15 +12,59 @@ from imutils import face_utils
 import concurrent.futures
 from playsound import playsound
 import pandas as pd
+import speech_recognition as sr
+import time
+import os
 
 # Importing required files
 import start
 import Distraction
 
-# Asking for the user's name before starting
-NAME = input("Please enter your name : ")
+r = sr.Recognizer()
 
+# Asking for the user's name before starting
+# NAME = input("Please enter your name : ")
+# NAME = NAME.lower()
+
+def speak(filename, msg):
+    tts = gTTS("{}".format("{}".format(msg)))
+    tts.save('{}.mp3'.format(filename))
+    playsound('{}.mp3'.format(filename))
+    os.remove('{}.mp3'.format(filename))
+
+NAME = ""
+
+with sr.Microphone() as source:  
+    while True:  
+        try:
+        
+            speak("name_again", "Hello, what is your name?")
+            text = r.record(source,duration=5)
+            recognised_text = r.recognize_google(text)
+            #time.sleep(3)
+            NAME = recognised_text
+            print(recognised_text)
+            speak("NAME", "Is your name, {}, please say ok to confirm".format(NAME))
+            text = r.record(source,duration=5)
+            confirm_name = r.recognize_google(text)
+            print(confirm_name)
+            if "ok" in confirm_name.lower() or "":
+                speak("welcome", "Welcome onboard, {}".format(NAME))
+                break
+            else:
+                speak("tryAgain", "Please try again")
+                continue
+            
+            #os.exit()
+        except Exception as e:
+            print(e)
+            print(len(NAME))
+            if len(NAME.strip()) == 0:
+                speak("nameNotFound", "I didn't get that, please try again!")
+                continue
 # Declaring constants
+
+
 
 # Drowsy Distance between eye lids threshold
 EYE_OPEN_THERSHOLD = 7
@@ -62,7 +106,7 @@ MAR = 0
 MAR_COUNTER = 0
 
 # MAR Threshold
-MAR_THRES = 35
+MAR_THRES = 30
 
 # Alarm when driver is drowsy for a threshold value of frames
 def distractionAlert(num, msg):
@@ -71,19 +115,34 @@ def distractionAlert(num, msg):
     playsound('distractAlert.mp3')
     os.remove('distractAlert.mp3')
 
+# Multiple places flag
+MULTIPLE_FACES_FLAG = False
+
+# Alarm when multiple faces are detected
+def multipleFacesAlarm(msg):
+    global MULTIPLE_FACES_FLAG
+    if MULTIPLE_FACES_FLAG:
+        tts = gTTS("{}".format(msg))
+        tts.save('multipleFaces.mp3')
+        playsound('multipleFaces.mp3')
+        os.remove('multipleFaces.mp3')
+        time.sleep(2)
+        MULTIPLE_FACES_FLAG = False
+
 
 
 # No Face detected flag
 NO_FACE_FLAG = False
 NO_FACE_FLAG1 = False
+NO_FACE_THRES = 10
 
 # Vars for df rows
 Dfmsg = ""
 
 # Function for alarm when no face is detected
 def NoFaceFunc():
-    global NO_FACE_FLAG, NO_FACE_FLAG1, Dfmsg
-    time.sleep(4)
+    global NO_FACE_FLAG, NO_FACE_FLAG1, Dfmsg, NO_FACE_THRES
+    time.sleep(NO_FACE_THRES)
     if not NO_FACE_FLAG and not NO_FACE_FLAG1:
         Dfmsg += "No face detected | "
         NO_FACE_FLAG = True
@@ -91,6 +150,7 @@ def NoFaceFunc():
         tts.save('noFace.mp3')
         playsound('noFace.mp3')
         os.remove('noFace.mp3')
+        print(start.AdvanceDetection(cap))
         NO_FACE_FLAG = False
 
 
@@ -121,8 +181,6 @@ data = {'Name':'NEW SESSION',
 
 df = pd.DataFrame(data, index=[0])
 
-
-
 while True:
 
     # Capturing frames
@@ -137,9 +195,18 @@ while True:
         NO_FACE_FLAG1 = False
         if not NO_FACE_FLAG:
             Thread(target = NoFaceFunc).start()
-            
     else:
         NO_FACE_FLAG1 = True
+        NO_FACE_FLAG = True
+
+    if len(rects) > 1:
+        time.sleep(2)
+        multipleFaces = "Multiple faces detected please make sure only your face is present in the frame"
+        if not MULTIPLE_FACES_FLAG:
+            MULTIPLE_FACES_FLAG = True
+            Thread(target = multipleFacesAlarm, args = (multipleFaces, )).start()
+        continue
+
     # Running required processes on all detected faces
     for (i, rect) in enumerate(rects):
 
