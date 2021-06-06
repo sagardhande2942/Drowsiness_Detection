@@ -3,6 +3,7 @@ import math
 import os
 import threading
 import time
+from typing import Counter
 
 # Imports related to image processing and alarms
 import cv2
@@ -14,12 +15,11 @@ from imutils import face_utils
 from playsound import playsound
 from scipy.spatial import distance as dist
 
-
-
 # Declaring Required Constants And Thresholds
 
+
 # EAR ratio for drowsy detection
-EYE_AR_THRESH = 0.3
+EYE_AR_THRESH = 0.25
 
 # Threshold for blink detection
 EYE_BLINK_THRESH = 0.2
@@ -119,7 +119,6 @@ blinkCheck = False
 
 
 def AdvanceDetection(cap):
-
     # Drwosy alarm thread
     DROWSY_ALARM_THREAD = threading.Thread(target=drowsyAlert, args=(10,))
 
@@ -128,7 +127,7 @@ def AdvanceDetection(cap):
     global COUNTER, ALARM_ON
     global alarm_status, alarm_status2, saying, ALARM_OFF
     global THREAD_KILL_FLAG
-
+    COUNTER = 0
     while True:
         # taking frames from the video/
         _, frame = cap.read()
