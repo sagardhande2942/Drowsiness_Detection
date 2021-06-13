@@ -60,11 +60,12 @@ THREAD_KILL_FLAG = False
 def drowsyAlert(num):
     global THREAD_KILL_FLAG
     while not ALARM_OFF:
-        print("IN THE THREAD")
-        tts = gTTS("`You are really sleepy please have some refreshments")
-        tts.save('hello1.mp3')
-        playsound('hello1.mp3')
-        os.remove('hello1.mp3')
+        # print("IN THE THREAD")
+        # tts = gTTS("`You are really sleepy please have some refreshments")
+        # tts.save('hello1.mp3')
+        # playsound('hello1.mp3')
+        # os.remove('hello1.mp3')
+        playsound('beep.mp3')
         for _ in range(5):
             if ALARM_OFF: 
                 return "Exiting"
@@ -190,7 +191,8 @@ def AdvanceDetection(cap):
                 ALARM_ON = False
                 ALARM_OFF = True
                 try:
-                    DROWSY_ALARM_THREAD.join()
+                    # DROWSY_ALARM_THREAD.join()
+                    pass
                 except Exception as e:
                     print("Error in start while join : " + str(e))
                 return "User is awake now"

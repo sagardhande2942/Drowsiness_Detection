@@ -187,8 +187,8 @@ def Distraction(cap):
             # rmat, jac = cv2.Rodrigues(rotationVector)
             # angles, mtxR, mtxQ, Qx, Qy, Qz = cv2.RQDecomp3x3(rmat)
 
-            # print('*' * 80)
-            # print(f"Qx:{Qx}\tQy:{Qy}\tQz:{Qz}\t")
+            print('*' * 80)
+            print(f"Qx:{Qx}\tQy:{Qy}\tQz:{Qz}\t")
 
             # Using arctan to get angle from tan inverse
             x1 = np.arctan2(Qx[2][1], Qx[2][2])
@@ -196,43 +196,7 @@ def Distraction(cap):
                             Qy[2][1]) + (Qy[2][2] * Qy[2][2])))
             z1 = np.arctan2(Qz[0][0], Qz[1][0])
 
-            # Logging the angles of the head pose from the nose line
-            # print("ThetaX: ", x)
-            # print("ThetaY: ", y1)
-            # print("ThetaZ: ", z)
-            # print('*' * 80)
-
-            # Defining threshold values for various head poses
-           
-
             
-
-
-            # print(face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
-
-            # convert the facial landmark (x, y)-coordinates to a NumPy
-            # array
-
-            # Trash
-
-            # jaw = shape[jStart:jEnd]
-            # nose = shape[nStart:nEnd]
-            # l1 = math.sqrt((jaw[0][0]-nose[1][0])**2+(jaw[0][1]-nose[1][1])**2)
-            # l2 = math.sqrt((jaw[16][0]-nose[1][0])**2+(jaw[16][1]-nose[1][1])**2)
-            # ratio = l1/l2
-            # m = (jaw[0][1]-jaw[16][1])/(jaw[0][0]-jaw[16][0])
-            # if (ratio <= 1.1 and ratio > .9):
-            #     cond1 = True
-            # else:
-            #     cond1 = False
-            # if (jaw[0][1] <= (nose[1][1]+5) and jaw[0][1] > (nose[1][1]-5)):
-            #     cond2 = True
-            # else:
-            #     cond2 = False
-            # if (m <= .05 and m > -.05):
-            #     cond3 = True
-            # else:
-            #     cond3 = False
 
             # Plotting eyes from the points taken from facial landmark
             leftEye = shape[lStart:lEnd]
@@ -330,8 +294,8 @@ def Distraction(cap):
                 GAZE = "Forward"
                 return True, "User is focussed now", distance
 
-            cv2.putText(frame, GAZE, (20, 20),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 80), 2)
+            # cv2.putText(frame, GAZE, (20, 20),
+            #         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 80), 2)
 
         # show the image
         cv2.imshow(winname="Face", mat=frame)
