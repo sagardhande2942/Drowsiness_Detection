@@ -19,15 +19,6 @@ import PNPProb
 
 # Declaring Required Constants And Thresholds
 
-# EAR ratio for drowsy detection
-EYE_AR_THRESH = 0.3
-
-# Threshold for blink detection
-EYE_BLINK_THRESH = 0.2
-
-# Time threshold for drowsy detection
-EYE_AR_CONSEC_FRAMES = 20
-
 # Time threshold for yawn detection
 CONSEC_YAWN = 10
 
@@ -127,7 +118,7 @@ predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 blinkCheck = False
 
 def Distraction(cap):
-    global blinkCheck, predictor, detector, face3Dmodel, EYE_AR_THRESH, EYE_AR_CONSEC_FRAMES, EYE_BLINK_THRESH, CONSEC_YAWN, COUNTER, TOTAL, YAWN_THRESH, ALARM_ON, COUNTER_YAWN, alarm_status, alarm_status2, saying
+    global blinkCheck, predictor, detector, face3Dmodel, CONSEC_YAWN, COUNTER, TOTAL, YAWN_THRESH, ALARM_ON, COUNTER_YAWN, alarm_status, alarm_status2, saying
 
     while True:
         # taking frames from the video
@@ -187,8 +178,8 @@ def Distraction(cap):
             # rmat, jac = cv2.Rodrigues(rotationVector)
             # angles, mtxR, mtxQ, Qx, Qy, Qz = cv2.RQDecomp3x3(rmat)
 
-            print('*' * 80)
-            print(f"Qx:{Qx}\tQy:{Qy}\tQz:{Qz}\t")
+            # print('*' * 80)
+            # print(f"Qx:{Qx}\tQy:{Qy}\tQz:{Qz}\t")
 
             # Using arctan to get angle from tan inverse
             x1 = np.arctan2(Qx[2][1], Qx[2][2])

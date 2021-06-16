@@ -69,7 +69,7 @@ with sr.Microphone() as source:
 EYE_OPEN_THERSHOLD = 7
 
 # Drowsy Time Threshold
-EYE_THRESH = 2
+EYE_THRESH = 1
 
 # Eye closed counter
 EYE_CONSEC = 0
@@ -121,7 +121,6 @@ def distractionAlert(num, msg):
 MULTIPLE_FACES_FLAG = False
 
 # Alarm when multiple faces are detected
-
 
 def multipleFacesAlarm(msg):
     global MULTIPLE_FACES_FLAG

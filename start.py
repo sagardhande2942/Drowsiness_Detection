@@ -1,16 +1,11 @@
 # Basic python imports
-import math
-import os
 import threading
 import time
-from typing import Counter
 
 # Imports related to image processing and alarms
 import cv2
 import dlib
 import numpy as np
-import pandas as pd
-from gtts import gTTS
 from imutils import face_utils
 from playsound import playsound
 from scipy.spatial import distance as dist
@@ -25,7 +20,7 @@ EYE_AR_THRESH = 0.25
 EYE_BLINK_THRESH = 0.2
 
 # Time threshold for drowsy detection
-EYE_AR_CONSEC_FRAMES = 20
+EYE_AR_CONSEC_FRAMES = 4
 
 # Drowsy Detection seconds  counter ( eyes closed for sec )
 COUNTER = 0
@@ -38,7 +33,6 @@ ALARM_ON = False
 ALARM_OFF = True
 
 
-
 # Flag required for various alarms
 alarm_status = False
 alarm_status2 = False
@@ -48,13 +42,28 @@ saying = False
 # engine = pyttsx3.init()
 
 # Getting the points from the Facil landmarks
-(jStart, jEnd) = face_utils.FACIAL_LANDMARKS_IDXS["jaw"] # Points for jaw
-(nStart, nEnd) = face_utils.FACIAL_LANDMARKS_IDXS["nose"] # Points for nose
-(lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"] # Points for left eye
-(rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"] # Points for right eye
+(jStart, jEnd) = face_utils.FACIAL_LANDMARKS_IDXS["jaw"]  # Points for jaw
+(nStart, nEnd) = face_utils.FACIAL_LANDMARKS_IDXS["nose"]  # Points for nose
+# Points for left eye
+(lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
+# Points for right eye
+(rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
 
 # Thread kill flag
 THREAD_KILL_FLAG = False
+
+# Increasing values flag
+INC_FLAG = False
+
+# Increasing values per second
+
+
+def increasingWithTime():
+    global COUNTER
+    time.sleep(1)
+    COUNTER += 1
+    increasingWithTime()
+
 
 # Alarm when driver is drowsy for a threshold value of frames
 def drowsyAlert(num):
@@ -67,15 +76,12 @@ def drowsyAlert(num):
         # os.remove('hello1.mp3')
         playsound('beep.mp3')
         for _ in range(5):
-            if ALARM_OFF: 
+            if ALARM_OFF:
                 return "Exiting"
             time.sleep(1)
         if THREAD_KILL_FLAG:
             THREAD_KILL_FLAG = False
             break
-
-
-
 
 
 # EAR formula function, to calculate the distance between eyelids
@@ -84,7 +90,7 @@ def eye_aspect_ratio(eye):
     B = dist.euclidean(eye[2], eye[4])
     C = dist.euclidean(eye[0], eye[3])
 
-    #Calculating the EAR from the standard formula
+    # Calculating the EAR from the standard formula
     EAR = (A + B) / (2.0 * C)
     return EAR
 
@@ -104,7 +110,6 @@ def lip_distance(shape):
     return distance
 
 
-
 # Load the detector
 detector = dlib.get_frontal_face_detector()
 
@@ -118,7 +123,6 @@ predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 blinkCheck = False
 
 
-
 def AdvanceDetection(cap):
     # Drwosy alarm thread
     DROWSY_ALARM_THREAD = threading.Thread(target=drowsyAlert, args=(10,))
@@ -127,7 +131,7 @@ def AdvanceDetection(cap):
     global EYE_AR_CONSEC_FRAMES, EYE_BLINK_THRESH
     global COUNTER, ALARM_ON
     global alarm_status, alarm_status2, saying, ALARM_OFF
-    global THREAD_KILL_FLAG
+    global THREAD_KILL_FLAG, INC_FLAG
     COUNTER = 0
     while True:
         # taking frames from the video/
@@ -173,7 +177,11 @@ def AdvanceDetection(cap):
 
             # Checking if the driver is drowsy from the given threshold value
             if ear < EYE_AR_THRESH:
-                COUNTER += 1
+                if INC_FLAG:
+                    incTimeThread = threading.Thread(target=increasingWithTime)
+                    incTimeThread.daemon = True
+                    incTimeThread.start()
+                    INC_FLAG = False
                 if COUNTER >= EYE_AR_CONSEC_FRAMES:
                     # TOTAL += 1
                     if not ALARM_ON:
@@ -190,13 +198,13 @@ def AdvanceDetection(cap):
                 COUNTER = 0
                 ALARM_ON = False
                 ALARM_OFF = True
+                INC_FLAG = True
                 try:
                     # DROWSY_ALARM_THREAD.join()
                     pass
                 except Exception as e:
                     print("Error in start while join : " + str(e))
                 return "User is awake now"
-
 
             # Printing the current EAR of the driver on screen
             cv2.putText(
@@ -225,7 +233,7 @@ def AdvanceDetection(cap):
             for (x, y) in shape:
                 # cv2.circle(frame, (x, y), 1, (0, 0, 255), -1, radius=2)
                 cv2.circle(frame, (x, y), radius=2,
-                        color=(0, 0, 255), thickness=-1)
+                           color=(0, 0, 255), thickness=-1)
 
         # show the image
         cv2.imshow(winname="Face", mat=frame)
