@@ -15,7 +15,6 @@ packaging==20.9
 pandas==1.2.4
 pipwin==0.5.1
 playsound==1.2.2
-PyAudio @ file:///C:/Users/dhand/pipwin/PyAudio-0.2.11-cp38-cp38-win_amd64.whl
 pyjsparser==2.7.1
 pyparsing==2.4.7
 PyPrind==2.11.3
@@ -26,6 +25,6 @@ requests==2.25.1
 scipy==1.6.3
 six==1.16.0
 soupsieve==2.2.1
-SpeechRecognition==3.8.1
+SpeechRecognitiopn==3.8.1
 tzlocal==2.1
 urllib3==1.26.5

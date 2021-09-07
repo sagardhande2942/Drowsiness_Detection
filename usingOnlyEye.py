@@ -1,5 +1,3 @@
-import Distraction
-import start
 import speech_recognition as sr
 import pandas as pd
 from playsound import playsound
@@ -18,23 +16,27 @@ today = date.today()
 # Project related imports for image processing
 
 # Importing required files
+import Distraction
+import start
 
+# Initializing the speech recognition
 r = sr.Recognizer()
 
 # Asking for the user's name before starting
 # NAME = input("Please enter your name : ")
 # NAME = NAME.lower()
 
-
+# A comman speak function
 def speak(filename, msg):
     tts = gTTS("{}".format("{}".format(msg)))
     tts.save('{}.mp3'.format(filename))
     playsound('{}.mp3'.format(filename))
     os.remove('{}.mp3'.format(filename))
 
-
+# The global name variable
 NAME = ""
 
+# Function for input of user name
 with sr.Microphone() as source:
     while True:
         try:
@@ -62,6 +64,7 @@ with sr.Microphone() as source:
             if len(NAME.strip()) == 0:
                 speak("nameNotFound", "I didn't get that, please try again!")
                 continue
+
 
 # Declaring constants
 

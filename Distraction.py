@@ -225,11 +225,11 @@ def Distraction(cap):
                 alarm_status2 = False
 
             # Deciding whether the user blinked or not & increasing the counter accordingly
-            if ear < EYE_BLINK_THRESH and blinkCheck == False:
-                blinkCheck = True
-                TOTAL += 1
-            elif ear > 0.3:
-                blinkCheck = False
+            # if ear < EYE_BLINK_THRESH and blinkCheck == False:
+            #     blinkCheck = True
+            #     TOTAL += 1
+            # elif ear > 0.3:
+            #     blinkCheck = False
 
 
             # Printing the total blinks on screen
