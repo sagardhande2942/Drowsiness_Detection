@@ -8,11 +8,7 @@ import os
 from gtts.tts import gTTS
 import face_recognition
 import numpy as np
-
-cred_obj = firebase_admin.credentials.Certificate('drowsinessdetection-c0493-firebase-adminsdk-qeyqj-74ccb3f0e6.json')
-default_app = firebase_admin.initialize_app(cred_obj, {
-	'databaseURL':'https://drowsinessdetection-c0493-default-rtdb.firebaseio.com/'
-	})
+import firebase_authentication
 
 username_ref = db.reference('Username/')
 users = username_ref.get()
@@ -24,6 +20,8 @@ def speak(filename, msg):
     tts.save('{}.mp3'.format(filename))
     playsound('{}.mp3'.format(filename))
     os.remove('{}.mp3'.format(filename))
+
+given_username = ""
 
 with sr.Microphone() as source:
     while True:
@@ -40,7 +38,7 @@ with sr.Microphone() as source:
             print("Confirm Text : ", str(confirm_username))
             unique_checker = False
             if "ok" in confirm_username.lower() or "":
-                for user in users:
+                for key, user in users.items():
                     if user == given_username:
                         speak("not_unique", "Sorry, this username is already taken, Please try again!")
                         unique_checker = True
