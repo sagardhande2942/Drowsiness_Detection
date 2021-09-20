@@ -10,7 +10,7 @@ idna==2.10
 imutils==0.5.4
 Js2Py==0.71
 numpy==1.20.3
-opencv-python==4.5.2.52
+opencv-python==4.5.2.53
 packaging==20.9
 pandas==1.2.4
 pipwin==0.5.1
