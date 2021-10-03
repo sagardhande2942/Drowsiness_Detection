@@ -17,7 +17,7 @@ today = date.today()
 
 # Importing required files
 import Distraction
-import start
+import main_detection 
 
 # Initializing the speech recognition
 r = sr.Recognizer()
@@ -34,36 +34,36 @@ def speak(filename, msg):
     os.remove('{}.mp3'.format(filename))
 
 # The global name variable
-NAME = ""
+# NAME = ""
 
 # Function for input of user name
-with sr.Microphone() as source:
-    while True:
-        try:
-            speak("name_again", "Hello, what is your name?")
-            text = r.record(source, duration=5)
-            recognised_text = r.recognize_google(text)
-            # time.sleep(3)
-            NAME = recognised_text
-            print(recognised_text)
-            speak("NAME", "Is your name, {}, please say ok to confirm".format(NAME))
-            text = r.record(source, duration=5)
-            confirm_name = r.recognize_google(text)
-            print(confirm_name)
-            if "ok" in confirm_name.lower() or "":
-                speak("welcome", "Welcome onboard, {}".format(NAME))
-                break
-            else:
-                speak("tryAgain", "Please try again")
-                continue
+# with sr.Microphone() as source:
+#     while True:
+#         try:
+#             speak("name_again", "Hello, what is your name?")
+#             text = r.record(source, duration=5)
+#             recognised_text = r.recognize_google(text)
+#             # time.sleep(3)
+#             NAME = recognised_text
+#             print(recognised_text)
+#             speak("NAME", "Is your name, {}, please say ok to confirm".format(NAME))
+#             text = r.record(source, duration=5)
+#             confirm_name = r.recognize_google(text)
+#             print(confirm_name)
+#             if "ok" in confirm_name.lower() or "":
+#                 speak("welcome", "Welcome onboard, {}".format(NAME))
+#                 break
+#             else:
+#                 speak("tryAgain", "Please try again")
+#                 continue
 
-            # os.exit()
-        except Exception as e:
-            print(e)
-            print(len(NAME))
-            if len(NAME.strip()) == 0:
-                speak("nameNotFound", "I didn't get that, please try again!")
-                continue
+#             # os.exit()
+#         except Exception as e:
+#             print(e)
+#             print(len(NAME))
+#             if len(NAME.strip()) == 0:
+#                 speak("nameNotFound", "I didn't get that, please try again!")
+#                 continue
 
 
 # Declaring constants
@@ -206,117 +206,122 @@ df = pd.DataFrame(data, index=[0])
 # To close flag
 TO_END = False
 
-while True:
-    TO_END = True
 
-    # Capturing frames
-    _, frame = cap.read()
+def start_detection(NAME):
+    global TO_END, df, NO_FACE_FLAG, NO_FACE_FLAG1, Dfmsg, NO_FACE_COUNT, NO_FACE_THRES, MAR_THRES, MAR, MAR_COUNTER
+    global cap, DISC_FLAG, DISC_FLAG1, DISC_FLAG1, DISC_COUNT_THRES, DISC_COUNTER, predictor, detector, FPS, EYE_FLAG, EYE_CONSEC
+    global EYE_OPEN_THERSHOLD, EYE_THRESH, r, today
+    while True:
+        TO_END = True
 
-    # Converting the camera input to gray scale image for detection
-    gray = cv2.cvtColor(src=frame, code=cv2.COLOR_BGR2GRAY)
+        # Capturing frames
+        _, frame = cap.read()
 
-    # Getting all detected faces rectangle
-    rects = detector(gray, 1)
-    if len(rects) == 0:
-        NO_FACE_FLAG1 = False
-        if not NO_FACE_FLAG:
-            Thread(target=NoFaceFunc).start()
-    else:
-        NO_FACE_FLAG1 = True
+        # Converting the camera input to gray scale image for detection
+        gray = cv2.cvtColor(src=frame, code=cv2.COLOR_BGR2GRAY)
 
-    # Multiple faces detection
-    # if len(rects) > 1:
-    #     time.sleep(2)
-    #     multipleFaces = "Multiple faces detected please make sure only your face is present in the frame"
-    #     if not MULTIPLE_FACES_FLAG:
-    #         MULTIPLE_FACES_FLAG = True
-    #         Thread(target = multipleFacesAlarm, args = (multipleFaces, )).start()
-    #     continue
-
-    # Running required processes on all detected faces
-    for (i, rect) in enumerate(rects):
-
-        # Getting the face details from the predictor
-        shape = predictor(gray, rect)
-        shape = face_utils.shape_to_np(shape)
-
-        # Time wait for each frame
-        # time.sleep(1 / FPS)
-
-        # Distraction Check
-
-        if DISC_COUNTER == DISC_COUNT_THRES and not DISC_FLAG1:
-            DISC_FLAG1 = True
-            print("Checking for distractions..")
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(Distraction.Distraction, cap)
-                DISC_FLAG, message, MAR = future.result()
-            print(message)
-            if MAR > MAR_THRES:
-                MAR_COUNTER += 1
-            if MAR_COUNTER >= 3:
-                mm = "User is Speaking or talking on phone please focus on road"
-                Thread(target=distractionAlert, args=(
-                    10, "{}".format(mm))).start()
-                Dfmsg += "{}".format(mm) + " | "
-                MAR_COUNTER = 0
-            if "Left" in message or "Right" in message:
-                Thread(target=distractionAlert, args=(10, message)).start()
-                Dfmsg += "{}".format(message) + " | "
-        if DISC_FLAG:
-            DISC_FLAG1 = False
-            DISC_COUNTER = 0
-            DISC_FLAG = False
-
-        # Getting the coordinates of eyelids in requierd variables
-        test = shape
-        _, leyetop = test[1]
-        _, leyebot = test[5]
-        _, reyetop = test[7]
-        _, reyebot = test[11]
-
-        # Checking if the distance between eye lids is less than the
-        # Given threshold
-        if abs(leyetop - leyebot) < EYE_OPEN_THERSHOLD and abs(reyetop - reyebot) < EYE_OPEN_THERSHOLD:
-            if not EYE_FLAG:
-                eyeThresholdThread = Thread(target=eyeThresholdCount).start()
+        # Getting all detected faces rectangle
+        rects = detector(gray, 1)
+        if len(rects) == 0:
+            NO_FACE_FLAG1 = False
+            if not NO_FACE_FLAG:
+                Thread(target=NoFaceFunc).start()
         else:
-            EYE_CONSEC = 0
+            NO_FACE_FLAG1 = True
 
-        # If eyes are closed for the entires threshold, performing specified event
-        if(EYE_CONSEC >= EYE_THRESH):
-            print("Drowsy")
-            print(start.AdvanceDetection(cap))
-            Dfmsg += "User is drowsy | "
-            EYE_CONSEC = 0
+        # Multiple faces detection
+        # if len(rects) > 1:
+        #     time.sleep(2)
+        #     multipleFaces = "Multiple faces detected please make sure only your face is present in the frame"
+        #     if not MULTIPLE_FACES_FLAG:
+        #         MULTIPLE_FACES_FLAG = True
+        #         Thread(target = multipleFacesAlarm, args = (multipleFaces, )).start()
+        #     continue
 
-        # Plotting the eye points on the screen
-        for (x, y) in shape:
-            cv2.circle(frame, (x, y), radius=2,
-                       color=(0, 0, 255), thickness=-1)
+        # Running required processes on all detected faces
+        for (i, rect) in enumerate(rects):
 
-    # Opening camera feed in a new window
-    cv2.imshow(winname="Face", mat=frame)
+            # Getting the face details from the predictor
+            shape = predictor(gray, rect)
+            shape = face_utils.shape_to_np(shape)
 
-    # Assigning ESC as closing key
-    try:
-        if cv2.waitKey(delay=1) == 27:
-            break
-    except Exception as e:
-        print("Error while closing with ESC :" + str(e))
-    if len(Dfmsg) != 0:
-        Dfmsg = Dfmsg[:-2]
-        df.loc[len(df.index)] = [NAME, today.strftime("%d/%m/%Y") +
-                                 " | " + datetime.now().strftime("%H:%M:%S"), Dfmsg]
-    Dfmsg = ""
+            # Time wait for each frame
+            # time.sleep(1 / FPS)
 
-# Closing the camera input and closing the windows
-print(df)
-cap.release()
-cv2.destroyAllWindows()
+            # Distraction Check
 
-df.to_csv('{}.csv'.format(NAME), mode='a', header=False)
-# You're still reading? This is to take a look at what you want to double check your work. index_col = 0 will prevent a "Unnamed:0" column for appearing.
-df_result = pd.read_csv('{}.csv'.format(
-    NAME), index_col=0).reset_index(drop=True, inplace=True)
-os.startfile('{}.csv'.format(NAME))
+            if DISC_COUNTER == DISC_COUNT_THRES and not DISC_FLAG1:
+                DISC_FLAG1 = True
+                print("Checking for distractions..")
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    future = executor.submit(Distraction.Distraction, cap)
+                    DISC_FLAG, message, MAR = future.result()
+                print(message)
+                if MAR > MAR_THRES:
+                    MAR_COUNTER += 1
+                if MAR_COUNTER >= 3:
+                    mm = "User is Speaking or talking on phone please focus on road"
+                    Thread(target=distractionAlert, args=(
+                        10, "{}".format(mm))).start()
+                    Dfmsg += "{}".format(mm) + " | "
+                    MAR_COUNTER = 0
+                if "Left" in message or "Right" in message:
+                    Thread(target=distractionAlert, args=(10, message)).start()
+                    Dfmsg += "{}".format(message) + " | "
+            if DISC_FLAG:
+                DISC_FLAG1 = False
+                DISC_COUNTER = 0
+                DISC_FLAG = False
+
+            # Getting the coordinates of eyelids in requierd variables
+            test = shape
+            _, leyetop = test[1]
+            _, leyebot = test[5]
+            _, reyetop = test[7]
+            _, reyebot = test[11]
+
+            # Checking if the distance between eye lids is less than the
+            # Given threshold
+            if abs(leyetop - leyebot) < EYE_OPEN_THERSHOLD and abs(reyetop - reyebot) < EYE_OPEN_THERSHOLD:
+                if not EYE_FLAG:
+                    eyeThresholdThread = Thread(target=eyeThresholdCount).start()
+            else:
+                EYE_CONSEC = 0
+
+            # If eyes are closed for the entires threshold, performing specified event
+            if(EYE_CONSEC >= EYE_THRESH):
+                print("Drowsy")
+                print(main_detection.AdvanceDetection(cap))
+                Dfmsg += "User is drowsy | "
+                EYE_CONSEC = 0
+
+            # Plotting the eye points on the screen
+            for (x, y) in shape:
+                cv2.circle(frame, (x, y), radius=2,
+                        color=(0, 0, 255), thickness=-1)
+
+        # Opening camera feed in a new window
+        cv2.imshow(winname="Face", mat=frame)
+
+        # Assigning ESC as closing key
+        try:
+            if cv2.waitKey(delay=1) == 27:
+                break
+        except Exception as e:
+            print("Error while closing with ESC :" + str(e))
+        if len(Dfmsg) != 0:
+            Dfmsg = Dfmsg[:-2]
+            df.loc[len(df.index)] = [NAME, today.strftime("%d/%m/%Y") +
+                                    " | " + datetime.now().strftime("%H:%M:%S"), Dfmsg]
+        Dfmsg = ""
+
+    # Closing the camera input and closing the windows
+    print(df)
+    cap.release()
+    cv2.destroyAllWindows()
+
+    df.to_csv('{}.csv'.format(NAME), mode='a', header=False)
+    # You're still reading? This is to take a look at what you want to double check your work. index_col = 0 will prevent a "Unnamed:0" column for appearing.
+    df_result = pd.read_csv('{}.csv'.format(
+        NAME), index_col=0).reset_index(drop=True, inplace=True)
+    os.startfile('{}.csv'.format(NAME))
