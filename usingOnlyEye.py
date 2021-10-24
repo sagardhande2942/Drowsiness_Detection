@@ -11,6 +11,8 @@ import os
 from threading import Thread
 import time
 from datetime import datetime, date
+import face_recognition
+from PIL import Image
 today = date.today()
 
 # Project related imports for image processing
@@ -211,6 +213,7 @@ def start_detection(NAME):
     global TO_END, df, NO_FACE_FLAG, NO_FACE_FLAG1, Dfmsg, NO_FACE_COUNT, NO_FACE_THRES, MAR_THRES, MAR, MAR_COUNTER
     global cap, DISC_FLAG, DISC_FLAG1, DISC_FLAG1, DISC_COUNT_THRES, DISC_COUNTER, predictor, detector, FPS, EYE_FLAG, EYE_CONSEC
     global EYE_OPEN_THERSHOLD, EYE_THRESH, r, today
+    user_images_path = "user_images/"
     while True:
         TO_END = True
 
@@ -222,12 +225,83 @@ def start_detection(NAME):
 
         # Getting all detected faces rectangle
         rects = detector(gray, 1)
+
+        # req_rect = []
+
+        look_for_matching_face = False
+
         if len(rects) == 0:
             NO_FACE_FLAG1 = False
             if not NO_FACE_FLAG:
                 Thread(target=NoFaceFunc).start()
+        elif len(rects) > 1:
+
+            print("in multiple faces")
+            temp_image = "temp_image"
+
+            #image with multiple faces
+            img_captured = cv2.imwrite('{}{}.jpg'.format(user_images_path, temp_image), frame)  
+
+            if not img_captured:
+                print("storing image failed")
+
+            user_image_location = face_recognition.load_image_file('{}{}.jpg'.format(user_images_path, NAME))
+            user_image_encoding = face_recognition.face_encodings(user_image_location)[0]
+
+            #captured image location
+            cap_image_location = face_recognition.load_image_file('{}{}.jpg'.format(user_images_path, temp_image))
+                
+            # array of locations of all faces in captured image
+            cap_image_encoding = face_recognition.face_encodings(cap_image_location)
+
+            face_locations = face_recognition.face_locations(cap_image_location)
+            
+            for ind, face_encoding in enumerate(cap_image_encoding):
+            
+                top, right, bottom, left = face_locations[ind]
+                print("hi")
+                face_image = cap_image_location[top:bottom,left:right]
+                pil_image = Image.fromarray(face_image)
+
+                # image of a single face in captured photo
+                pil_image.save(user_images_path+"cropped.jpg")
+
+                # cropped face location
+                # cropped_face_location = face_recognition.load_image_file('{}cropped.jpg'.format(user_images_path))
+                # # cropped face encodings
+                # print("h")
+                # cropped_face_encoding = face_recognition.face_encodings(cropped_face_location)
+                # print(cropped_face_encoding)
+                # cropped_face_encoding = cropped_face_encoding[0]
+
+                match = face_recognition.face_distance([user_image_encoding], face_encoding)
+                print(match)
+                match = match[0]
+
+                print("hii1")
+
+                if match < 0.4:
+                    look_for_matching_face = True
+                    # print("hii2")
+                    # multiple_faces_solved = True
+                    # req_rect = [top, right, bottom, left]
+                    # print("hii3")
+                    # print(frame)
+                    # frame = frame[top:top+(top - bottom), left:left+(right - left)]
+                    # cv2.imwrite('myimage.jpg', frame)
+                    # # Converting the camera input to gray scale image for detection
+                    my_image = cv2.imread('{}cropped.jpg'.format(user_images_path))
+                    gray = cv2.cvtColor(src=my_image, code=cv2.COLOR_BGR2GRAY)
+
+                    # Getting all detected faces rectangle
+                    rects = detector(gray, 1)
+                    break
         else:
             NO_FACE_FLAG1 = True
+
+
+        if not look_for_matching_face:
+            print("No Match Found")
 
         # Multiple faces detection
         # if len(rects) > 1:
@@ -239,6 +313,9 @@ def start_detection(NAME):
         #     continue
 
         # Running required processes on all detected faces
+
+        print(len(rects))    
+
         for (i, rect) in enumerate(rects):
 
             # Getting the face details from the predictor
