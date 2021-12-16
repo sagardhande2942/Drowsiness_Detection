@@ -200,7 +200,7 @@ print("Started..")
 data = {
     'Name': 'NEW SESSION',
     'Time': today.strftime("%d/%m/%Y") + " | " + datetime.now().strftime("%H:%M:%S"),
-    'Message': '-----',
+    'Message': 'Message',
 }
 
 df = pd.DataFrame(data, index=[0])
@@ -259,7 +259,6 @@ def start_detection(NAME):
             for ind, face_encoding in enumerate(cap_image_encoding):
             
                 top, right, bottom, left = face_locations[ind]
-                print("hi")
                 face_image = cap_image_location[top:bottom,left:right]
                 pil_image = Image.fromarray(face_image)
 
@@ -278,8 +277,6 @@ def start_detection(NAME):
                 print(match)
                 match = match[0]
 
-                print("hii1")
-
                 if match < 0.4:
                     look_for_matching_face = True
                     # print("hii2")
@@ -295,13 +292,12 @@ def start_detection(NAME):
 
                     # Getting all detected faces rectangle
                     rects = detector(gray, 1)
-                    break
+            if not look_for_matching_face:
+                print("No Match Found")
         else:
             NO_FACE_FLAG1 = True
 
 
-        if not look_for_matching_face:
-            print("No Match Found")
 
         # Multiple faces detection
         # if len(rects) > 1:
@@ -314,7 +310,7 @@ def start_detection(NAME):
 
         # Running required processes on all detected faces
 
-        print(len(rects))    
+       
 
         for (i, rect) in enumerate(rects):
 

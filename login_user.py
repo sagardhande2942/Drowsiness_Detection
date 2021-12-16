@@ -22,7 +22,6 @@ def speak(filename, msg):
 
 
 def login_user():
-
     username_ref = db.reference('Username/')
     users = username_ref.get()
 
@@ -110,23 +109,11 @@ def login_user():
             cap_image_location = face_recognition.load_image_file('{}{}.jpg'.format(login_images_path, temp_image))
                 
             # array of locations of all faces in captured image
-            cap_image_encoding = face_recognition.face_locations(cap_image_location)
+            cap_image_encoding = face_recognition.face_encodings(cap_image_location)
             
-            for face_location in cap_image_encoding:
-            
-                top, right, bottom, left = face_location
-                face_image = cap_image_location[top:bottom,left:right]
-                pil_image = Image.fromarray(face_image)
+            for face_encoding in cap_image_encoding:    
 
-                # image of a single face in captured photo
-                pil_image.save(login_images_path+"cropped.jpg")
-
-                # cropped face location
-                cropped_face_location = face_recognition.load_image_file('{}cropped.jpg'.format(login_images_path))
-                # cropped face encodings
-                cropped_face_encoding = face_recognition.face_encodings(cropped_face_location)[0]  
-
-                match = face_recognition.face_distance([user_image_encoding], cropped_face_encoding)
+                match = face_recognition.face_distance([user_image_encoding], face_encoding)
                 match = match[0]
                 print(match)
                 os.remove('{}cropped.jpg'.format(login_images_path))
@@ -140,7 +127,6 @@ def login_user():
                 break
             else:
                 continue
-
         else:
             break
 
@@ -173,8 +159,7 @@ def login_user():
                 '{}{}.jpg'.format(user_images_path, user))
             db_face_encodings = face_recognition.face_encodings(db_face_locations)[0]
 
-            match = face_recognition.face_distance(
-            [user_image_encoding], db_face_encodings)
+            match = face_recognition.face_distance( [user_image_encoding], db_face_encodings)
             match = match[0]
             print(match)
             if match < 0.4:

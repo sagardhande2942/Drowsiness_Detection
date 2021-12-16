@@ -10,6 +10,11 @@ import face_recognition
 import numpy as np
 import firebase_authentication
 import login_user
+import pandas as pd
+
+
+given_username = ""
+
 
 def speak(filename, msg):
     tts = gTTS("{}".format("{}".format(msg)))
@@ -19,9 +24,9 @@ def speak(filename, msg):
 
 
 def register_user():
+    global given_username
     username_ref = db.reference('Username/')
     users = username_ref.get()
-    given_username = ""
     recognizer = sr.Recognizer()
 
   
@@ -118,5 +123,11 @@ def register_user():
     username_ref.push().set(given_username)
 
     speak("registration_complete", "Thank You, Your registration is complete. Please login with your account.")
+    print("hii, ", given_username)
+    df = {'Sr No.': [""], 'Name':[""], 'Timestamp':[""], 'Message':[""]}
+    df1 = pd.DataFrame.from_dict(df)
+    df1 = df1.set_index('Sr No.')
+    df1.to_csv('{}.csv'.format(given_username))
+
     login_user.login_user()
 
