@@ -199,7 +199,7 @@ print("Started..")
 
 data = {
     'Name': 'NEW SESSION',
-    'Time': today.strftime("%d/%m/%Y") + " | " + datetime.now().strftime("%H:%M:%S"),
+    'Time': today.strftime("%d-%m-%Y") + " " + datetime.now().strftime("%H:%M:%S"),
     'Message': 'Message',
 }
 
@@ -384,8 +384,8 @@ def start_detection(NAME):
             print("Error while closing with ESC :" + str(e))
         if len(Dfmsg) != 0:
             Dfmsg = Dfmsg[:-2]
-            df.loc[len(df.index)] = [NAME, today.strftime("%d/%m/%Y") +
-                                    " | " + datetime.now().strftime("%H:%M:%S"), Dfmsg]
+            df.loc[len(df.index)] = [NAME, today.strftime("%Y-%m-%d") +
+                                    " " + datetime.now().strftime("%H:%M:%S"), Dfmsg]
         Dfmsg = ""
 
     # Closing the camera input and closing the windows
