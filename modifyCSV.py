@@ -27,7 +27,27 @@ for i in df['Message']:
 print(weights)
 df['Weights'] = weights
 
-print(df)
+check = False
+index = 0
+global_timestamp = ""
 
+for i in df['Message']: 
+    print(index)
+    i = i.strip()
+    if i == "User is drowsy":
+        if check:
+            print(global_timestamp)
+            print(df.iloc[index]['Timestamp'][:-2])
+            if global_timestamp == df.iloc[index]['Timestamp'][:-2].strip():
+                df = df.drop(df.index[index]) 
+                index -= 1
+        check = True
+        global_timestamp = df.iloc[index]['Timestamp']
+        global_timestamp = global_timestamp[:-2].strip()
+    else:
+        check = False
+    index += 1
+
+print(df)
 # df.set_index("Sr No.")
 df.to_csv("start.csv", index=False)
