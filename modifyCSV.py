@@ -5,8 +5,8 @@ df = pd.read_csv("start.csv")
 
 weights = []
 
-dict = {"User is drowsy": 5, "User is distracted Looking Right": 1, "User is distracted Looking Left": 1, "No face detected": 0,
-"User is Speaking or talking on phone please focus on road" : 1}
+dict = {"User is drowsy": 12, "User is distracted Looking Right": 8, "User is distracted Looking Left": 8, "No face detected": 0,
+"User is Speaking or talking on phone please focus on road" : 4}
 
 for i in df['Message']:
     i = i.strip()
@@ -32,12 +32,12 @@ index = 0
 global_timestamp = ""
 
 for i in df['Message']: 
-    print(index)
+    # print(index)
     i = i.strip()
     if i == "User is drowsy":
         if check:
-            print(global_timestamp)
-            print(df.iloc[index]['Timestamp'][:-2])
+            # print(global_timestamp)
+            # print(df.iloc[index]['Timestamp'][:-2])
             if global_timestamp == df.iloc[index]['Timestamp'][:-2].strip():
                 df = df.drop(df.index[index]) 
                 index -= 1
