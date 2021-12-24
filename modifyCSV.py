@@ -5,8 +5,8 @@ df = pd.read_csv("start.csv")
 
 weights = []
 
-dict = {"User is drowsy": 12, "User is distracted Looking Right": 8, "User is distracted Looking Left": 8, "No face detected": 0,
-"User is Speaking or talking on phone please focus on road" : 4}
+dict = {"User is drowsy": 10, "User is distracted Looking Right": 5, "User is distracted Looking Left": 5, "No face detected": 0,
+"User is Speaking or talking on phone please focus on road" : 2}
 
 for i in df['Message']:
     i = i.strip()
