@@ -46,7 +46,15 @@ class UserLoginView(APIView):
                         login(request, user)
                     else:
                         return HttpResponse('Falied to authenticate', status=404)
-                    return HttpResponse('Success', status=200)
+                    user = User.objects.get(username=request.data['username'])
+                    driver = Driver.objects.get(user=user)
+                    outer_dict = {}
+                    outer_dict['User'] = user.__dict__
+                    outer_dict['User']['_state'] = ''
+                    outer_dict['Driver'] = driver.__dict__
+                    outer_dict['Driver']['_state'] = ""
+                    print(outer_dict)
+                    return Response(outer_dict, status=200)
             else:
                 return HttpResponse('Username does not exist', status=404)
 
@@ -57,24 +65,33 @@ class UserLoginView(APIView):
 
 
 class UserLogoutAPI(APIView):
-    def get(self, request):
-        logout(request)
-        return Response({"Message": "Success"})
+    def get(self, request, pk=None):
+        user = User.objects.filter(id=pk)
+        if user.exists():
+        # logout(request)
+            return Response({"Message": "Success"})
+        else:
+            return HttpResponse("Invalid PK", status="404")
 
 
 class UserEditAPI(APIView):
-    def post(self, request):
-        user = request.user
-        user = User.objects.filter(pk=request.user.id)
-        user.update(**request.data)
-
-        return Response(request.data)
+    def post(self, request, pk=None):
+        user = User.objects.filter(id=pk)
+        if user.exists():
+            user = User.objects.filter(pk=request.user.id)
+            user.update(**request.data)
+            return Response(request.data)
+        else:
+            return HttpResponse("Invalid PK", status="404")
 
 
 class DriverEditAPI(APIView):
-    def post(self, request):
-        user = request.user
-        driver = Driver.objects.filter(user=user)
-        driver.update(**request.data)
-
-        return Response(request.data)
+    def post(self, request, pk=None):
+        user = User.objects.filter(id=pk)
+        if user.exists():
+            user = User.objects.get(id=pk)
+            driver = Driver.objects.filter(user=user)
+            driver.update(**request.data)
+            return Response(request.data)
+        else:
+            return HttpResponse("Invalid PK", status="404")
