@@ -131,3 +131,54 @@ class DashboardErrorGraphAPI(APIView):
                     else: outer_dict[months_date]['Speaking'] += 1
         
         return Response(outer_dict)
+
+
+class ProfileRatingRankAPI(APIView):
+    def get(self, request):
+        user = request.user
+        driver = Driver.objects.get(user=user)
+        driver_qs = Driver.objects.all()
+        outer_dict = {
+            "Rating": driver.rating,
+            "Rank":0,
+        }
+        rank_list = []
+        for driver_instance in driver_qs:
+            rank_list.append(float(driver_instance.rating))
+        rank_list.sort()
+        rank_list.reverse()
+        rank = rank_list.index(float(driver.rating))
+        outer_dict['Rank'] = rank + 1
+
+        return Response(outer_dict)
+
+class ProfileLeaderboardAPI(APIView):
+    def get(self, request):
+        user = request.user
+        driver_qs = Driver.objects.all()
+        outer_list = []
+        rank_list = []
+        for driver_instance in driver_qs:
+            rank_list.append((float(driver_instance.rating), driver_instance.user.first_name, driver_instance.user.last_name))
+
+        rank_list.sort(key=lambda x:x[0])
+        rank_list.reverse()
+        rank_list = rank_list[:5]
+        for i, user_details in enumerate(rank_list):
+            rating, first_name, last_name = user_details
+            details_dict = {
+                "first_name":first_name,
+                "last_name":last_name,
+                "rating":rating,
+                "rank":(i + 1)
+            }
+            outer_list.append(details_dict)
+        
+        return Response(outer_list)
+
+
+# class LeaderboardRatingRankGraphAPI(APIView):
+#     def get(self, request):
+#         user = request.user
+#         driver = Driver.objects.get(user=user)
+#         rank_list = []

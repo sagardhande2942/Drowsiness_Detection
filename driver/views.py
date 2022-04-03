@@ -60,3 +60,21 @@ class UserLogoutAPI(APIView):
     def get(self, request):
         logout(request)
         return Response({"Message": "Success"})
+
+
+class UserEditAPI(APIView):
+    def post(self, request):
+        user = request.user
+        user = User.objects.filter(pk=request.user.id)
+        user.update(**request.data)
+
+        return Response(request.data)
+
+
+class DriverEditAPI(APIView):
+    def post(self, request):
+        user = request.user
+        driver = Driver.objects.filter(user=user)
+        driver.update(**request.data)
+
+        return Response(request.data)

@@ -8,4 +8,6 @@ urlpatterns = [
     path('get_session_hours/', views.ProfileSessionHoursGraphAPI.as_view(), name="ProfileSessionHoursGraph"),
     path('get_count_all/', views.DashboardAllCountAPI.as_view(), name="DashboardAllCountAPI"),
     path('get_dashboard_error_graph/', views.DashboardErrorGraphAPI.as_view(), name="DashboardErrorGraph"),
+    path('get_rating_rank/', views.ProfileRatingRankAPI.as_view(), name="ProfileRatingRank"),
+    path('get_leaderboard/', views.ProfileLeaderboardAPI.as_view(), name="ProfileLeaderboard"),
 ]
