@@ -150,8 +150,20 @@ class DashboardErrorGraphAPI(APIView):
                         elif log_instance.type == "1":
                             outer_dict[months_date]['Distracted'] += 1
                         else: outer_dict[months_date]['Speaking'] += 1
-            
-            return Response(outer_dict)
+            drowsy, distracted, speaking = [], [], []
+            counter = []
+            for x in range(1, 13):
+                if x > 9:
+                    counter.append(f'{x}')
+                else:
+                    counter.append(f'0{x}')
+            count = 0
+            for i, j in outer_dict.items():
+                drowsy.append(outer_dict[counter[count]]["Drowsy"])
+                distracted.append(outer_dict[counter[count]]["Distracted"])
+                speaking.append(outer_dict[counter[count]]["Speaking"])
+                count += 1
+            return Response({"Drowsy":drowsy, "Distracted":distracted, "Speaking":speaking})
         else:
             return HttpResponse("Invalid PK", status="404")
 
