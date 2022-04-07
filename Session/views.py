@@ -99,7 +99,7 @@ class ProfileSessionHoursGraphAPI(APIView):
                 hours.append(outer_dict[counter[count]]["hours"])
                 # speaking.append(outer_dict[counter[count]]["Speaking"])
                 count += 1
-            return Response({"Sessions":sessions, "Counter": counter})
+            return Response({"Sessions":sessions, "Counter": hours})
         else:
             return HttpResponse("Invalid PK", status="404")
 
