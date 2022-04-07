@@ -86,7 +86,7 @@ class ProfileSessionHoursGraphAPI(APIView):
                         "hours":float(session_instance.hours)
                     }
                     outer_dict[month_date]["hours"] = round(outer_dict[month_date]["hours"], 2)
-            sessions, hours = [], [], []
+            sessions, hours = [], []
             counter = []
             for x in range(1, 13):
                 if x > 9:
