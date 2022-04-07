@@ -86,7 +86,20 @@ class ProfileSessionHoursGraphAPI(APIView):
                         "hours":float(session_instance.hours)
                     }
                     outer_dict[month_date]["hours"] = round(outer_dict[month_date]["hours"], 2)
-            return Response(outer_dict)
+            sessions, hours = [], [], []
+            counter = []
+            for x in range(1, 13):
+                if x > 9:
+                    counter.append(f'{x}')
+                else:
+                    counter.append(f'0{x}')
+            count = 0
+            for i, j in outer_dict.items():
+                sessions.append(outer_dict[counter[count]]["sessions"])
+                hours.append(outer_dict[counter[count]]["hours"])
+                # speaking.append(outer_dict[counter[count]]["Speaking"])
+                count += 1
+            return Response({"Sessions":sessions, "Counter": counter})
         else:
             return HttpResponse("Invalid PK", status="404")
 
@@ -204,7 +217,7 @@ class ProfileLeaderboardAPI(APIView):
 
             rank_list.sort(key=lambda x:x[0])
             rank_list.reverse()
-            rank_list = rank_list[:5]
+            # rank_list = rank_list[:5]
             for i, user_details in enumerate(rank_list):
                 rating, first_name, last_name = user_details
                 details_dict = {
