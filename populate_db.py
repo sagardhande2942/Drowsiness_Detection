@@ -53,7 +53,7 @@ def random_date(start, end):
         random_second = 0
     return start + timedelta(seconds=random_second)
 
-for k in range(30):
+for k in range(5):
     username = fake.name()
     first_name = username.split(' ')[0]
     last_name = username.split(' ')[1]
@@ -97,6 +97,7 @@ for k in range(30):
                         user = driver,
                         start_time = times[datetime_index],
                         end_time = times[datetime_index + 1],
+                        pause = False,
                         hours=hours)
             session.save()
             no_logs = random.randint(0, 10)

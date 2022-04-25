@@ -13,11 +13,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='driver',
-            name='id',
-            field=models.AutoField(default=0, primary_key=True, serialize=False),
-        ),
+        # migrations.AddField(
+        #     model_name='driver',
+        #     name='id',
+        #     # field=models.AutoField(default=1, primary_key=True, serialize=False),
+        # ),
         migrations.AlterField(
             model_name='driver',
             name='user',

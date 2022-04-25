@@ -13,10 +13,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='driver',
-            name='id',
-        ),
+        # migrations.RemoveField(
+        #     model_name='driver',
+        #     name='id',
+        # ),
         migrations.AlterField(
             model_name='driver',
             name='user',

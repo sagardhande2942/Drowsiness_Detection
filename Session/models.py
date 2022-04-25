@@ -16,7 +16,8 @@ class Session(models.Model):
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
     hours = models.CharField(max_length=200, null=True, blank=True)
-
+    pause = models.BooleanField(default=False, null=True, blank=True)
+    
     def __str__(self):
         return f'{self.id} {self.user}'
 

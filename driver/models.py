@@ -18,6 +18,7 @@ class Driver(models.Model):
     rating = models.CharField(max_length=200, null=True, blank=True)
     speed_limit = models.IntegerField(blank=True, null=True)
     alarm_sound = models.CharField(max_length=200,blank=True,null=True ,choices=alarm_choice, default="0")
+    alarm_sound1 = models.CharField(max_length=200,blank=True,null=True ,choices=alarm_choice, default="0")
 
     def __str__(self):
         return self.user.username
