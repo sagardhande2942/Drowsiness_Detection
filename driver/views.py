@@ -5,7 +5,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.views import APIView
 from driver.models import Driver
-from .serializers import DriverDetailsSerializer, UserLoginSerializer, UserRegisterSerializer
+from .serializers import DriverDetailsSerializer, DriverEditSerializer, UserEditSerializer, UserLoginSerializer, UserRegisterSerializer
 from django.contrib.auth import get_user_model, login, logout, authenticate
 from django.contrib.auth.hashers import check_password
 from django.views import View
@@ -74,12 +74,30 @@ class UserLogoutAPI(APIView):
             return HttpResponse("Invalid PK", status="404")
 
 
+
 class UserEditAPI(APIView):
     def post(self, request, pk=None):
         user = User.objects.filter(id=pk)
         if user.exists():
-            user = User.objects.filter(pk=request.user.id)
-            user.update(**request.data)
+            # user = User.objects.filter(pk=request.user.id)
+            # user.update(**request.data)
+
+            user = User.objects.get(pk=request.user.id)
+            try:
+                user.first_name = request.data.first_name
+            except:
+                pass
+            try:
+                user.last_name = request.data.last_name
+            except:
+                pass
+            try:
+                user.username = request.data.username
+            except:
+                pass
+            user.save()
+
+            
             return Response(request.data)
         else:
             return HttpResponse("Invalid PK", status="404")
@@ -95,3 +113,4 @@ class DriverEditAPI(APIView):
             return Response(request.data)
         else:
             return HttpResponse("Invalid PK", status="404")
+        
