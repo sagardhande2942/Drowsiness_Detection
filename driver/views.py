@@ -82,7 +82,7 @@ class UserEditAPI(APIView):
             # user = User.objects.filter(pk=request.user.id)
             # user.update(**request.data)
 
-            user = User.objects.get(pk=request.user.id)
+            user = User.objects.get(pk=pk)
             try:
                 user.first_name = request.data.first_name
             except:
