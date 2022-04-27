@@ -79,25 +79,9 @@ class UserEditAPI(APIView):
     def post(self, request, pk=None):
         user = User.objects.filter(id=pk)
         if user.exists():
-            # user = User.objects.filter(pk=request.user.id)
-            # user.update(**request.data)
-
-            user = User.objects.get(pk=pk)
-            try:
-                user.first_name = request.data.first_name
-            except:
-                pass
-            try:
-                user.last_name = request.data.last_name
-            except:
-                pass
-            try:
-                user.username = request.data.username
-            except:
-                pass
-            user.save()
-
-            
+            user = User.objects.filter(pk=pk)
+            user.update(**request.data)
+           
             return Response(request.data)
         else:
             return HttpResponse("Invalid PK", status="404")
