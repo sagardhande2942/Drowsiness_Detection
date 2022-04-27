@@ -5,7 +5,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.views import APIView
 from driver.models import Driver
-from .serializers import DriverDetailsSerializer, DriverEditSerializer, UserEditSerializer, UserLoginSerializer, UserRegisterSerializer
+from .serializers import DriverDetailsSerializer,  UserLoginSerializer, UserRegisterSerializer
 from django.contrib.auth import get_user_model, login, logout, authenticate
 from django.contrib.auth.hashers import check_password
 from django.views import View

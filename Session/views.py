@@ -40,7 +40,7 @@ class ProfileSessionListAPI(APIView):
         if user.exists():
             user = User.objects.get(id=pk)
             driver = Driver.objects.get(user=user)
-            session_qs = Session.objects.filter(user=driver)
+            session_qs = Session.objects.filter(user=driver)[:200]
             outer_list = []
             for session_instance in session_qs:
                 log_qs = Log.objects.filter(session=session_instance)
