@@ -14,7 +14,7 @@ from model_bakery.recipe import Recipe,foreign_key , baker, related
 import datetime
 from random import randrange
 fake = Faker() 
-Faker.seed(2942)
+Faker.seed(2950)
 from datetime import timedelta
 DROWSY_PERCENTAGE = 0.40
 
@@ -53,7 +53,7 @@ def random_date(start, end):
         random_second = 0
     return start + timedelta(seconds=random_second)
 
-for k in range(5):
+for k in range(7):
     username = fake.name()
     first_name = username.split(' ')[0]
     last_name = username.split(' ')[1]
