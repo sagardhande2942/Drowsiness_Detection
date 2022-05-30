@@ -1,6 +1,7 @@
 import speech_recognition as sr
 import pandas as pd
 from playsound import playsound
+import sys
 import concurrent.futures
 from imutils import face_utils
 import numpy as np
@@ -208,8 +209,9 @@ df = pd.DataFrame(data, index=[0])
 # To close flag
 TO_END = False
 
+NAME = sys.argv[1]
 
-def start_detection(NAME):
+def start_detection():
     global TO_END, df, NO_FACE_FLAG, NO_FACE_FLAG1, Dfmsg, NO_FACE_COUNT, NO_FACE_THRES, MAR_THRES, MAR, MAR_COUNTER
     global cap, DISC_FLAG, DISC_FLAG1, DISC_FLAG1, DISC_COUNT_THRES, DISC_COUNTER, predictor, detector, FPS, EYE_FLAG, EYE_CONSEC
     global EYE_OPEN_THERSHOLD, EYE_THRESH, r, today
