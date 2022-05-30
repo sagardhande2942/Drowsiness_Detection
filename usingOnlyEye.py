@@ -104,7 +104,14 @@ DISC_FLAG = False
 DISC_FLAG1 = False
 
 # Taking video input form specified camera
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('videos/testvid.mp4')
+print(cap.get(cv2.CAP_PROP_FPS))
+#cap.set(cv2.CAP_PROP_BUFFERSIZE, 1) 
+frames = []
+for i in range(7200):
+    _, frame = cap.read()
+    frames.append(frame)
+
 
 # Mouth Aspect Ration Constant
 MAR = 0
@@ -209,18 +216,22 @@ df = pd.DataFrame(data, index=[0])
 # To close flag
 TO_END = False
 
-NAME = sys.argv[1]
+#NAME = sys.argv[1]
+NAME = "yash"
+
 
 def start_detection():
     global TO_END, df, NO_FACE_FLAG, NO_FACE_FLAG1, Dfmsg, NO_FACE_COUNT, NO_FACE_THRES, MAR_THRES, MAR, MAR_COUNTER
     global cap, DISC_FLAG, DISC_FLAG1, DISC_FLAG1, DISC_COUNT_THRES, DISC_COUNTER, predictor, detector, FPS, EYE_FLAG, EYE_CONSEC
     global EYE_OPEN_THERSHOLD, EYE_THRESH, r, today
     user_images_path = "user_images/"
+    xframe = 0
     while True:
         TO_END = True
-
         # Capturing frames
-        _, frame = cap.read()
+        frame = frames[xframe]
+        xframe += 1
+        start = time.time()
 
         # Converting the camera input to gray scale image for detection
         gray = cv2.cvtColor(src=frame, code=cv2.COLOR_BGR2GRAY)
@@ -390,6 +401,11 @@ def start_detection():
                                     " " + datetime.now().strftime("%H:%M:%S"), Dfmsg]
         Dfmsg = ""
 
+        end = time.time()
+        seconds = end - start
+        time.sleep(seconds)
+        print ("Time taken : {0} seconds".format(seconds))
+
     # Closing the camera input and closing the windows
     print(df)
     cap.release()
@@ -409,3 +425,5 @@ def start_detection():
     df_result = pd.read_csv('{}.csv'.format(
         NAME), index_col=0).reset_index(drop=True, inplace=True)
     os.startfile('{}.csv'.format(NAME))
+
+start_detection()
