@@ -110,7 +110,7 @@ MAR = 0
 MAR_COUNTER = 0
 
 # MAR Threshold
-MAR_THRES = 29
+MAR_THRES = 20
 
 # Alarm when driver is drowsy for a threshold value of frames
 
@@ -332,7 +332,7 @@ def start_detection(NAME):
                 print(message)
                 if MAR > MAR_THRES:
                     MAR_COUNTER += 1
-                if MAR_COUNTER >= 3:
+                if MAR_COUNTER >= 2:
                     mm = "User is Speaking or talking on phone please focus on road"
                     Thread(target=distractionAlert, args=(
                         10, "{}".format(mm))).start()
@@ -392,6 +392,15 @@ def start_detection(NAME):
     print(df)
     cap.release()
     cv2.destroyAllWindows()
+
+    data = {
+        'Name': 'END SESSION',
+        'Time': today.strftime("%d-%m-%Y") + " " + datetime.now().strftime("%H:%M:%S"),
+        'Message': 'Message',
+    }
+
+    df.loc[len(df.index)] = [data["Name"], data["Time"], data["Message"]]
+
 
     df.to_csv('{}.csv'.format(NAME), mode='a', header=False)
     # You're still reading? This is to take a look at what you want to double check your work. index_col = 0 will prevent a "Unnamed:0" column for appearing.
