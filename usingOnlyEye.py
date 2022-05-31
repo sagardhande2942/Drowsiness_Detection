@@ -141,7 +141,7 @@ def multipleFacesAlarm(msg):
 # No Face detected flag
 NO_FACE_FLAG = False
 NO_FACE_FLAG1 = False
-NO_FACE_THRES = 10
+NO_FACE_THRES = 50
 
 # Vars for df rows
 Dfmsg = ""
@@ -278,10 +278,10 @@ def start_detection():
             NO_FACE_FLAG1 = False
             if not NO_FACE_FLAG:
                 Thread(target=NoFaceFunc).start()
+            '''
         elif len(rects) > 1:
 
             print("in multiple faces")
-        
             temp_image = "temp_image"
 
             #image with multiple faces
@@ -339,6 +339,7 @@ def start_detection():
                     rects = detector(gray, 1)
             if not look_for_matching_face:
                 print("No Match Found")
+                '''
         else:
             NO_FACE_FLAG1 = True
 
@@ -442,7 +443,7 @@ def start_detection():
     # Closing the camera input and closing the windows
     print(df)
     cap.release()
-    result.release()
+    # result.release()
     cv2.destroyAllWindows()
 
     data = {

@@ -275,10 +275,10 @@ def Distraction(cap):
                         color=(0, 0, 255), thickness=-1)
 
 
-            if angles[1] < -15:
+            if angles[1] < -20:
                 GAZE = "Looking Left"
                 return True, "User is distracted {}".format(GAZE), distance
-            elif angles[1] > 15:
+            elif angles[1] > 20:
                 GAZE = "Looking Right"
                 return True, "User is distracted {}".format(GAZE), distance
             else:
