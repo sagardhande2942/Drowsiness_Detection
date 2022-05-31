@@ -85,7 +85,7 @@ EYE_FLAG = False
 
 
 # Frame capture delay
-FPS = 1
+FPS = 30
 
 # Loading the detector
 detector = dlib.get_frontal_face_detector()
@@ -103,14 +103,6 @@ DISC_COUNT_THRES = 7
 DISC_FLAG = False
 DISC_FLAG1 = False
 
-# Taking video input form specified camera
-cap = cv2.VideoCapture('videos/testvid.mp4')
-print(cap.get(cv2.CAP_PROP_FPS))
-#cap.set(cv2.CAP_PROP_BUFFERSIZE, 1) 
-frames = []
-for i in range(7200):
-    _, frame = cap.read()
-    frames.append(frame)
 
 
 # Mouth Aspect Ration Constant
@@ -220,25 +212,64 @@ TO_END = False
 NAME = "yash"
 
 
+# Taking video input form specified camera
+
+
+'''
+*** Preloading Video ***
+
+cap = cv2.VideoCapture('videos/testvid1.mp4')
+print(cap.get(cv2.CAP_PROP_FPS))
+#cap.set(cv2.CAP_PROP_BUFFERSIZE, 1) 
+frames = []
+for i in range(300):
+    _, frame = cap.read()
+    gray = cv2.cvtColor(src=frame, code=cv2.COLOR_BGR2GRAY)
+    rects = detector(gray, 1)
+    frames.append((frame, gray, rects))
+
+cap = cv2.VideoCapture('videos/testvid1.mp4')
+'''
+
+cap = cv2.VideoCapture('videos/testvid1.mp4')
+
+# Video Writing
+# result = cv2.VideoWriter('filename.avi', -1, 30.0, (640,480))
+
+
 def start_detection():
     global TO_END, df, NO_FACE_FLAG, NO_FACE_FLAG1, Dfmsg, NO_FACE_COUNT, NO_FACE_THRES, MAR_THRES, MAR, MAR_COUNTER
     global cap, DISC_FLAG, DISC_FLAG1, DISC_FLAG1, DISC_COUNT_THRES, DISC_COUNTER, predictor, detector, FPS, EYE_FLAG, EYE_CONSEC
     global EYE_OPEN_THERSHOLD, EYE_THRESH, r, today
     user_images_path = "user_images/"
-    xframe = 0
+    # xframe = 0
     while True:
         TO_END = True
         # Capturing frames
-        frame = frames[xframe]
+        _, frame = cap.read()
+
+        '''
+
+        *** Preloading Stuff ***
+        try:
+            frame, gray, rects = frames[xframe]
+        except:
+            break
         xframe += 1
+        '''
         start = time.time()
 
+
         # Converting the camera input to gray scale image for detection
-        gray = cv2.cvtColor(src=frame, code=cv2.COLOR_BGR2GRAY)
+        try:
+            gray = cv2.cvtColor(src=frame, code=cv2.COLOR_BGR2GRAY)
+        except:
+            break
 
         # Getting all detected faces rectangle
         rects = detector(gray, 1)
 
+        
         # req_rect = []
 
         look_for_matching_face = False
@@ -250,6 +281,7 @@ def start_detection():
         elif len(rects) > 1:
 
             print("in multiple faces")
+        
             temp_image = "temp_image"
 
             #image with multiple faces
@@ -323,7 +355,7 @@ def start_detection():
 
         # Running required processes on all detected faces
 
-       
+    
 
         for (i, rect) in enumerate(rects):
 
@@ -388,6 +420,7 @@ def start_detection():
 
         # Opening camera feed in a new window
         cv2.imshow(winname="Face", mat=frame)
+        # result.write(frame)
 
         # Assigning ESC as closing key
         try:
@@ -405,10 +438,11 @@ def start_detection():
         seconds = end - start
         time.sleep(seconds)
         print ("Time taken : {0} seconds".format(seconds))
-
+        
     # Closing the camera input and closing the windows
     print(df)
     cap.release()
+    result.release()
     cv2.destroyAllWindows()
 
     data = {
