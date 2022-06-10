@@ -384,7 +384,13 @@ def start_detection(NAME):
             print("Error while closing with ESC :" + str(e))
         if len(Dfmsg) != 0:
             Dfmsg = Dfmsg[:-2]
-            df.loc[len(df.index)] = [NAME, today.strftime("%Y-%m-%d") +
+            if '|' in Dfmsg:
+                Dfmsg = Dfmsg.split('|')
+                for i in range(len(Dfmsg)):
+                    df.loc[len(df.index)] = [NAME, today.strftime("%Y-%m-%d") +
+                                    " " + datetime.now().strftime("%H:%M:%S"), Dfmsg[i]]
+            else:
+                df.loc[len(df.index)] = [NAME, today.strftime("%Y-%m-%d") +
                                     " " + datetime.now().strftime("%H:%M:%S"), Dfmsg]
         Dfmsg = ""
 

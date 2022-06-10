@@ -57,8 +57,8 @@ def take_username():
                     speak("nameNotFound", "I didn't get that, please try again!")
 
 
-take_username()
-# given_username = ""
+# take_username()
+given_username = "sagar"
 
 df = ""
 
@@ -69,6 +69,7 @@ except:
     exit()
 
 
+# print(df)
 
 weights = []
 
@@ -193,12 +194,13 @@ for index, row in df.iterrows():
         my_time = datetime(my_time[2], my_time[1], my_time[0], my_time1[0], my_time1[1])
         end_time_session = my_time
         time_delta = end_time_session - start_time_session
-        total_seconds = time_delta.total_seconds()
+        # print(time_delta.total_seconds())
+        total_seconds += time_delta.total_seconds()
         start_time_session = ""
         end_time_session = ""
 
 print(total_score, total_seconds)
-final_rating = round(max(0, 5 - (total_score / total_seconds) * 60 * 60 * 0.02), 2)
+final_rating = round(max(0, 5 - (total_score / (total_seconds / (60 * 60))) * 0.02), 2)
 print(final_rating)
 speak("ask_username", str("The efficiency rating of {} is".format(given_username)) + str(final_rating))
 
